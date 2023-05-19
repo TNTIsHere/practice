@@ -1,7 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const authRoutes = require("./routes/authRoutes")
-const cookieParser = require("cookie-parser")
+const authRoutes = require("./routes/authRoutes");
+const cookieParser = require("cookie-parser");
+const { requireAuth } = require("./middleware/authMiddleware");
 require('dotenv').config();
 
 const app = express();
@@ -19,6 +20,5 @@ mongoose.connect(DBURL, { useNewUrlParser: true })
     .catch((err) => console.log(err));
 
 app.get("/", (req, res) => res.render("index"));
-app.get("/login", (req, res) => res.render("login"));
-app.get("/signup", (req, res) => res.render("signup"));
+app.get("/blogs", requireAuth, (req, res) => res.render("blogs"));
 app.use(authRoutes);
