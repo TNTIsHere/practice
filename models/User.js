@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const { isEmail } = require("validator");
 const bcrypt = require("bcrypt");
 
+// User Schema
 const userSchema = new mongoose.Schema({
     email: {
         type: String,
@@ -18,12 +19,14 @@ const userSchema = new mongoose.Schema({
     },
 });
 
+// Hash/Salt user password on signup
 userSchema.pre("save", async function (next) {
     const salt = await bcrypt.genSalt();
     this.password = await bcrypt.hash(this.password, salt);
     next();
 });
 
+// Login function with comparison against hashed + salted password
 userSchema.statics.login = async function (email, password) {
     const user = await this.findOne({ email });
     if (user) {

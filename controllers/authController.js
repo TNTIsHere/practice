@@ -2,6 +2,7 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 require('dotenv').config();
 
+// Custom error handler
 const handleErrors = (err) => {
     console.log(err.message, err.code);
     let errors = {email: "", password: ""};
@@ -27,13 +28,14 @@ const handleErrors = (err) => {
     return errors;
 }
 
+// Create JWT token
 const maxAge = 3 * 24 * 60 * 60;
 const createJWT = (id) => {
     return jwt.sign({id}, process.env.JWTsecret, {
         expiresIn: maxAge
     });
 }
-
+// Get login/signup
 module.exports.signup_get = (req, res) => {
     res.render("signup");
 }
@@ -42,6 +44,7 @@ module.exports.login_get = (req, res) => {
     res.render("login");
 }
 
+// Signup function for website
 module.exports.signup_post = async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -56,6 +59,7 @@ module.exports.signup_post = async (req, res) => {
     }
 }
 
+// Login function for website
 module.exports.login_post = async (req, res) => {
     const { email, password } = req.body;
 
@@ -69,4 +73,10 @@ module.exports.login_post = async (req, res) => {
         const errors = handleErrors(err);
         res.status(400).json({ errors })
     }
+}
+
+// Logout function for website
+module.exports.logout_get = (req, res) => {
+    res.cookie("jwt", "", { maxAge: 1 });
+    res.redirect("/");
 }
