@@ -1,3 +1,104 @@
 <%- include("partials/header"); -%>
 
+<div>
+    <form class="add-doc">
+        <h2>Create a blog</h2>
+        <label for="title">Blog Title</label>
+        <input type="text" name="title" required>
+        <div class="title error"></div>
+
+        <label for="snippet">Snippet</label>
+        <input type="text" name="snippet" required>
+        <div class="snippet error"></div>
+
+        <label for="body">Body</label>
+        <textarea type="text" name="body" required></textarea>
+        <div class="body error"></div>
+        <button>Add Blog</button>
+    </form>
+
+    <h2>User blogs</h2>
+    <hr>
+    <div class="blog-container">
+        <% blogs.forEach(function(blog) { %>
+            <div>
+                <h2 class="blog-title">Title: <%= blog.title %></h2>
+                <h3 class="blog-snippet">Snippet: <%= blog.snippet %></h3>
+                <p class="blog-body"><%= blog.body %></p>
+                <p class="blog-created-at">Created at: <%= blog.createdAt %></p>
+                <form class="delete-doc">
+                    <button class="blog-delete" data-doc="<%= blog._id %>">Delete Blog</button>
+                </form>
+            </div>
+            <hr>
+        <% }); %>
+    </div>
+</div>
+
+<script>
+    // Adding document frontend
+    const addForm = document.querySelector(".add-doc")
+    const titleError = document.querySelector(".title.error")
+    const snippetError = document.querySelector(".snippet.error")
+    const bodyError = document.querySelector(".body.error")
+
+    addForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        titleError.textContent = "";
+        snippetError.textContent = "";
+        bodyError.textContent = "";
+
+        const title = addForm.title.value
+        const snippet = addForm.snippet.value
+        const body = addForm.body.value
+
+        try {
+            const res = await fetch("/addblog", {
+                method: "POST",
+                body: JSON.stringify({ title, snippet, body }),
+                headers: { "Content-Type": "application/json" }
+            });
+            const data = await res.json();
+            console.log(data);
+            if (data.errors) {
+                titleError.textContent = data.errors.title;
+                snippetError.textContent = data.errors.snippet;
+                bodyError.textContent = data.errors.body;
+            }
+            if (data.blog) {
+                location.assign("/blogs");
+            }
+        }
+        catch (err) {
+            console.log(err);
+        }
+    });
+
+    // Deleting document frontend
+    const deleteButtons = document.querySelectorAll(".blog-delete");
+
+    deleteButtons.forEach(button => {
+        button.addEventListener("click", async (e) => {
+            e.preventDefault();
+            const id = e.target.dataset.doc;
+        
+            try {
+                const res = await fetch(`/${id}`, {
+                    method: "DELETE"
+                });
+
+                const data = await res.json();
+                console.log(data);
+
+                if (data.redirect) {
+                    location.href = data.redirect;
+                }
+            } catch (err) {
+                console.log(err);
+            }
+    });
+});
+</script>
+
 <%- include("partials/footer"); -%>

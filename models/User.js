@@ -17,6 +17,11 @@ const userSchema = new mongoose.Schema({
         required: [true, "Please enter a password"],
         minlength: [6, "The password must be at least 6 characters long"]
     },
+    isAdmin: {
+        type: Boolean,
+        required: true,
+        default: false
+    }
 });
 
 // Hash/Salt user password on signup
@@ -39,6 +44,6 @@ userSchema.statics.login = async function (email, password) {
     throw Error("Incorrect Email");
 }
 
-const User = mongoose.model("users", userSchema);
+const User = mongoose.model("user", userSchema);
 
 module.exports = User;

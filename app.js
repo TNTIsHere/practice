@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const authRoutes = require("./routes/authRoutes");
 const cookieParser = require("cookie-parser");
 const { requireAuth, checkUser } = require("./middleware/authMiddleware");
+const Blog = require("./models/Blog");
 require('dotenv').config();
 
 const app = express();
@@ -11,7 +12,6 @@ const app = express();
 app.use(express.static("public"));
 app.use(express.json());
 app.use(cookieParser());
-
 
 // Ejs as middleware
 app.set("view engine", "ejs");
@@ -25,6 +25,21 @@ mongoose.connect(DBURL, { useNewUrlParser: true })
 
 // Standard routes
 app.get("*", checkUser);
-app.get("/", (req, res) => res.render("index"));
-app.get("/blogs", requireAuth, (req, res) => res.render("blogs"));
+
+app.get("/", (req, res) => res.render("index"))
+
+app.get("/blogs", requireAuth, (req, res) => {
+    Blog.find()
+    .sort({ _id: -1 })
+    .limit(10)
+    .then((blogs) => {
+        res.render("blogs", { blogs });
+    })
+    .catch((error) => {
+        console.error("Error fetching documents", error);
+        res.render("blogs", { blogs: [] });
+    })
+});
+
+app.get("/adminsecret", requireAuth, (req, res) => res.render("adminsecret"))
 app.use(authRoutes);

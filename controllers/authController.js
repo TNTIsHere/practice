@@ -1,5 +1,8 @@
 const User = require("../models/User");
+const Blog = require("../models/Blog")
 const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
+const { requireAuth, checkUser } = require("../middleware/authMiddleware");
 require('dotenv').config();
 
 // Custom error handler
@@ -43,6 +46,31 @@ module.exports.signup_get = (req, res) => {
 module.exports.login_get = (req, res) => {
     res.render("login");
 }
+// Adding a blog
+module.exports.addblog_post = async (req, res) => {
+    const { title, snippet, body } = req.body;
+    try {
+        const blog = await Blog.create({ title, snippet, body })
+        res.status(201).json({blog: blog._id});
+    }
+    catch (err) {
+        const errors = handleErrors(err);
+        res.status(400).json({ errors })
+    }
+};
+
+// Deleting a blog
+module.exports.deleteblog_delete = async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        const result = await Blog.findByIdAndDelete(id);
+        res.json({ redirect: "/blogs" })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ error: "The developer sucks" })
+    }
+};
 
 // Signup function for website
 module.exports.signup_post = async (req, res) => {
@@ -57,7 +85,7 @@ module.exports.signup_post = async (req, res) => {
         const errors = handleErrors(err);
         res.status(400).json({ errors });
     }
-}
+};
 
 // Login function for website
 module.exports.login_post = async (req, res) => {
@@ -73,10 +101,11 @@ module.exports.login_post = async (req, res) => {
         const errors = handleErrors(err);
         res.status(400).json({ errors })
     }
-}
+};
 
 // Logout function for website
 module.exports.logout_get = (req, res) => {
     res.cookie("jwt", "", { maxAge: 1 });
+    res.cookie("isAdmin", "", { maxAge: 1 });
     res.redirect("/");
-}
+};
