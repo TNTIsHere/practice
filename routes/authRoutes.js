@@ -10,6 +10,7 @@ router.get("/login", authController.login_get);
 router.post("/login", authController.login_post);
 router.get("/logout", authController.logout_get);
 router.post("/addblog", authController.addblog_post);
+router.post("/update", authController.updateblog_post);
 router.delete("/:id", authController.deleteblog_delete);
 
 module.exports = router;

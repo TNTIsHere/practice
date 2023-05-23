@@ -3,15 +3,15 @@
 <div>
     <form class="add-doc">
         <h2>Create a blog</h2>
-        <label for="title">Blog Title</label>
+        <label for="title">Blog Title:</label>
         <input type="text" name="title" required>
         <div class="title error"></div>
 
-        <label for="snippet">Snippet</label>
+        <label for="snippet">Snippet:</label>
         <input type="text" name="snippet" required>
         <div class="snippet error"></div>
 
-        <label for="body">Body</label>
+        <label for="body">Body:</label>
         <textarea type="text" name="body" required></textarea>
         <div class="body error"></div>
         <button>Add Blog</button>
@@ -28,6 +28,21 @@
                 <p class="blog-created-at">Created at: <%= blog.createdAt %></p>
                 <form class="delete-doc">
                     <button class="blog-delete" data-doc="<%= blog._id %>">Delete Blog</button>
+                </form>
+                <br>
+                <form class="blog-update">
+                    <h3>Update Blog</h3>
+                    <label for="updatetitle">Blog Title:</label>
+                    <input type="text" name="updatetitle" required>
+
+                    <label for="updatesnippet">Blog Snippet:</label>
+                    <input type="text" name="updatesnippet" required>
+
+                    <label for="updatebody">Blog Body:</label>
+                    <textarea type="text" name="updatebody" required></textarea>
+
+                    <input type="hidden" value="<%= blog._id %>" name="updateblogid">
+                    <button>Update Blog</button>
                 </form>
             </div>
             <hr>
@@ -99,6 +114,39 @@
             }
     });
 });
+
+// Updating a document
+    const updateForm = document.querySelectorAll(".blog-update")
+
+    updateForm.forEach((updatedForm) => {
+        updatedForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const title = updatedForm.updatetitle.value
+            const snippet = updatedForm.updatesnippet.value
+            const body = updatedForm.updatebody.value
+            const id = updatedForm.updateblogid.value
+
+            console.log(title, snippet, body, id)
+
+            try {
+                const res = await fetch(`/update`, {
+                    method: "POST",
+                    body: JSON.stringify({ id, title, snippet, body }),
+                    headers: { "Content-Type": "application/json" }
+                })
+                const data = await res.json();
+                console.log(data);
+
+                if (data.response) {
+                    location.assign("/blogs")
+                }
+            }
+            catch (error) {
+                console.log(error);
+            }
+        })
+    });
 </script>
 
 <%- include("partials/footer"); -%>

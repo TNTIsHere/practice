@@ -31,7 +31,7 @@ app.get("/", (req, res) => res.render("index"))
 app.get("/blogs", requireAuth, (req, res) => {
     Blog.find()
     .sort({ _id: -1 })
-    .limit(10)
+    .limit(4)
     .then((blogs) => {
         res.render("blogs", { blogs });
     })
@@ -43,3 +43,5 @@ app.get("/blogs", requireAuth, (req, res) => {
 
 app.get("/adminsecret", requireAuth, (req, res) => res.render("adminsecret"))
 app.use(authRoutes);
+
+// for senere user.Likes[blog._id, comment._id]

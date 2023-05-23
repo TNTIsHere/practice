@@ -47,7 +47,7 @@ module.exports.login_get = (req, res) => {
     res.render("login");
 }
 // Adding a blog
-module.exports.addblog_post = async (req, res) => {
+module.exports.addblog_post = [requireAuth, async (req, res) => {
     const { title, snippet, body } = req.body;
     try {
         const blog = await Blog.create({ title, snippet, body })
@@ -57,10 +57,10 @@ module.exports.addblog_post = async (req, res) => {
         const errors = handleErrors(err);
         res.status(400).json({ errors })
     }
-};
+}];
 
 // Deleting a blog
-module.exports.deleteblog_delete = async (req, res) => {
+module.exports.deleteblog_delete = [requireAuth, async (req, res) => {
     const id = req.params.id;
 
     try {
@@ -70,7 +70,21 @@ module.exports.deleteblog_delete = async (req, res) => {
         console.log(err)
         res.status(500).json({ error: "The developer sucks" })
     }
-};
+}];
+
+// Updating a blog
+module.exports.updateblog_post = [requireAuth, async (req, res) => {
+    const { title, snippet, body, id } = req.body;
+
+    try {
+        const result = await Blog.findByIdAndUpdate(id, { title, snippet, body });
+        res.status(200).json({response:"i love men"});
+    }
+    catch (err) {
+        console.log(err)
+        res.status(500).json({ error: "the dev actually sucks" })
+    }
+}];
 
 // Signup function for website
 module.exports.signup_post = async (req, res) => {
