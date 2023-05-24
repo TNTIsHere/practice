@@ -43,5 +43,3 @@ app.get("/blogs", requireAuth, (req, res) => {
 
 app.get("/adminsecret", requireAuth, (req, res) => res.render("adminsecret"))
 app.use(authRoutes);
-
-// for senere user.Likes[blog._id, comment._id]

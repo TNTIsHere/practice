@@ -46,6 +46,7 @@ module.exports.signup_get = (req, res) => {
 module.exports.login_get = (req, res) => {
     res.render("login");
 }
+
 // Adding a blog
 module.exports.addblog_post = [requireAuth, async (req, res) => {
     const { title, snippet, body } = req.body;
